@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة الرئيسية </title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.jpg">
+</head>
+<body>
+    <nav class="navbar">
+        <li><a href="#" id="logout-btn" style="color: red;">تسجيل الخروج</a></li>
+        <h1 id="welcome-message">أهلاً بك يا <span id="user-display">...</span>!</h1>
+        
+            <div class="logo"><img src="logo.jpg"></div>
+            <div>
+                <a href="tel:123" class="emergency-link">اتصل بالإسعاف: 123</a>
+            </div>
+        <ul class="nav-links">
+            <li><a href="Main._Page.html">الصفحة الرئيسية</a></li>
+            <li><a href="https://www.google.com/maps/search/مستشفيات+قريبة+مني/" target="_blank">اقرب مستشفي</a>
+            <li><a href="#">احجز موعد</a></li>
+            <li><a href="#">اسعافات اولية</a></li>
+        </ul>
+    </nav>
+<div class="cards">
+
+    <div>
+        <img src="كشف.jpg" alt="">
+        <h3>احجز موعدك</h3>
+        <a href="حجز.html">احجز الآن</a>
+    </div>
+    
+    <div>
+        <img src="مستشفى .png" alt="">
+        <h3>أقرب مستشفى</h3>
+        <a href="https://www.google.com/maps/search/مستشفيات+قريبة+مني/" target="_blank">ابحث عن أقرب مستشفى</a>
+    </div>
+
+    <div>
+        <img src="الاسعافات.png" alt="">
+        <h3>الاسعافات الاولية</h3>
+        <a href="الاسعافات.html">عرض التفاصيل</a>
+    </div>
+    <script>
+        //localStorage.clear();
+    window.onload = function() {
+    
+        const savedName = localStorage.getItem('userName');
+
+        
+        if (savedName) {
+        
+            document.getElementById('user-display').textContent = savedName;
+        } else {
+            
+            window.location.href = "index.html";
+        }
+    };
+    document.getElementById('logout-btn').addEventListener('click', function(event) {
+    event.preventDefault(); 
+
+    
+    localStorage.removeItem('userName');
+    
+    localStorage.removeItem('status'); 
+
+    
+    alert("تم تسجيل الخروج بنجاح");
+    window.location.href = "index.html"; 
+});
+    </script>
+</div>
+</body>
+</html>

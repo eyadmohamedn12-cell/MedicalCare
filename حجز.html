@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام حجز المواعيد الطبية الكامل</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 10px 5%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+        .logo img {
+            width: 60px;
+            height: auto;
+        }
+        .search-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .search-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-bottom: 2px;
+        }
+        select, input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+        .search-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .doctor-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 30px 5%;
+        }
+        .dr-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #eee;
+            transition: transform 0.2s;
+        }
+        .dr-card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-book {
+            display: inline-block;
+            width: 100%;
+            padding: 10px 0;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 25px;
+            border-radius: 10px;
+            width: 320px;
+            text-align: right;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px; left: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .save-btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .admin-section {
+            padding: 30px 5%;
+            background: #fff;
+            margin-top: 50px;
+            border-top: 3px solid #3498db;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo"><img src="logo.jpg" alt="Logo"></div>
+        <div class="search-container">
+            <div class="search-group">
+                <label>المحافظة:</label>
+                <select id="governorate">
+                    <option value="القاهرة">القاهرة</option>
+                    <option value="الجيزة">الجيزة</option>
+                    <option value="الإسكندرية">الإسكندرية</option>
+                    <option value="سوهاج">سوهاج</option>
+                    <option value="الدقهلية">الدقهلية</option>
+                    <option value="المنيا">المنيا</option>
+                    <option value="الغربية">الغربية</option>
+                    <option value="أسيوط">أسيوط</option>
+                    <option value="أسوان">أسوان</option>
+                </select>
+            </div>
+            <div class="search-group">
+                <label>التخصص:</label>
+                <select id="specialty">
+                    <option value="عظام">عظام</option>
+                    <option value="باطنة">باطنة</option>
+                    <option value="أطفال">أطفال</option>
+                    <option value="أسنان">أسنان</option>
+                    <option value="جلدية">جلدية</option>
+                    <option value="جراحة عامة">جراحة عامة</option>
+                    <option value="نساء وتوليد">نساء وتوليد</option>
+                </select>
+            </div>
+            <button class="search-btn" onclick="filterDoctors()">بحث</button>
+        </div>
+    </nav>
+
+    <div id="doctors-list" class="doctor-cards-container"></div>
+
+    <div id="booking-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3>تأكيد الحجز</h3>
+            <p id="selected-dr-text" style="font-weight: bold; color: #3498db;"></p>
+            <label>تاريخ الميلاد:</label>
+            <input type="date" id="booking-date" style="width: 100%; margin-bottom: 10px;">
+            <label> الوقت:</label>
+            <select id="booking-time" style="width: 100%; margin-bottom: 10px;">
+                <option value="10:00 صباحاً">10:00 صباحاً</option>
+                <option value="01:00 ظهراً">01:00 ظهراً</option>
+                <option value="06:00 مساءً">06:00 مساءً</option>
+            </select>
+            <label>رقم الهاتف:</label>
+            <input type="tel" id="patient-phone" placeholder="01xxxxxxxxx" style="width: 100%;">
+            <button class="save-btn" onclick="saveBooking()">حفظ الحجز</button>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h2 style="text-align: center;">سجل الحجوزات المحفوظة</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم الطبيب</th>
+                    <th>رقم الهاتف</th>
+                    <th>تاريخ الميلاد</th>
+                    <th>الوقت (غدا)</th>
+                    <th>وقت التنفيذ</th>
+                </tr>
+            </thead>
+            <tbody id="bookings-body"></tbody>
+        </table>
+    </div>
+
+<script>
+    
+    const doctorsData = [
+        { name: "د. أحمد علي", spec: "عظام", price: "300", gov: "القاهرة" },
+        { name: "د. منى محمود", spec: "باطنة", price: "200", gov: "القاهرة" },
+        { name: "د. هاني حسن", spec: "أطفال", price: "150", gov: "القاهرة" },
+        { name: "د. سارة كمال", spec: "نساء وتوليد", price: "400", gov: "القاهرة" },
+        { name: "د. ليلى فوزي", spec: "أسنان", price: "250", gov: "القاهرة" },
+        { name: "د. ياسر جلال", spec: "عظام", price: "280", gov: "الإسكندرية" },
+        { name: "د. نادية عبده", spec: "باطنة", price: "180", gov: "الإسكندرية" },
+        { name: "د. مصطفى رامي", spec: "أطفال", price: "140", gov: "الإسكندرية" },
+        { name: "د. إيمان صبحي", spec: "أسنان", price: "220", gov: "الإسكندرية" },
+        { name: "د. محمود شاكر", spec: "عظام", price: "150", gov: "سوهاج" },
+        { name: "د. شيماء علي", spec: "باطنة", price: "100", gov: "سوهاج" },
+        { name: "د. عصام يوسف", spec: "أطفال", price: "120", gov: "سوهاج" },
+        { name: "د. طارق سعيد", spec: "أسنان", price: "180", gov: "سوهاج" },
+        { name: "د. سمير فؤاد", spec: "عظام", price: "250", gov: "الجيزة" },
+        { name: "د. ريهام أنور", spec: "جلدية", price: "300", gov: "الجيزة" },
+        { name: "د. عادل إمام", spec: "باطنة", price: "200", gov: "الجيزة" },
+        { name: "د. إيهاب توفيق", spec: "جراحة عامة", price: "350", gov: "الدقهلية" },
+        { name: "د. مريم حسين", spec: "نساء وتوليد", price: "250", gov: "الدقهلية" },
+        { name: "د. فؤاد خليل", spec: "باطنة", price: "150", gov: "المنيا" },
+        { name: "د. نورا صبحي", spec: "أطفال", price: "130", gov: "المنيا" },
+        { name: "د. سامح حسين", spec: "أسنان", price: "200", gov: "أسيوط" },
+        { name: "د. وجدي غنيم", spec: "عظام", price: "180", gov: "أسيوط" },
+        { name: "د. مجدي يعقوب", spec: "جراحة عامة", price: "600", gov: "أسوان" },
+        { name: "د. تهاني الجبالي", spec: "نساء وتوليد", price: "300", gov: "أسوان" },
+        { name: "د. كمال الشناوي", spec: "باطنة", price: "160", gov: "الغربية" },
+        { name: "د. زبيدة ثروت", spec: "جلدية", price: "250", gov: "الغربية" },
+        { name: "د. يحيى الفخراني", spec: "أطفال", price: "200", gov: "المنوفية" },
+        { name: "د. لبلبة", spec: "أسنان", price: "180", gov: "المنوفية" },
+        { name: "د. عزت العلايلي", spec: "عظام", price: "220", gov: "الشرقية" },
+        { name: "د. دلال عبد العزيز", spec: "باطنة", price: "170", gov: "الشرقية" },
+        { name: "د. حسن حسني", spec: "جراحة عامة", price: "400", gov: "البحيرة" },
+        { name: "د. إنعام سالوسة", spec: "أطفال", price: "140", gov: "البحيرة" },
+        { name: "د. فاروق الفيشاوي", spec: "باطنة", price: "190", gov: "كفر الشيخ" },
+        { name: "د. فايزة كمال", spec: "نساء وتوليد", price: "230", gov: "كفر الشيخ" },
+        { name: "د. هشام سليم", spec: "عظام", price: "260", gov: "بورسعيد" },
+        { name: "د. روجينا", spec: "أسنان", price: "210", gov: "بورسعيد" },
+        { name: "د. خالد صالح", spec: "جراحة عامة", price: "450", gov: "السويس" },
+        { name: "د. ميساء مغربي", spec: "جلدية", price: "280", gov: "السويس" },
+        { name: "د. محمد صبحي", spec: "باطنة", price: "200", gov: "الأقصر" },
+        { name: "د. حنان ترك", spec: "أطفال", price: "150", gov: "الأقصر" },
+        { name: "د. أشرف عبد الباقي", spec: "عظام", price: "240", gov: "قنا" },
+        { name: "د. منى زكي", spec: "نساء وتوليد", price: "350", gov: "قنا" }
+    ];
+
+    function displayDoctors(data) {
+        const container = document.getElementById('doctors-list');
+        container.innerHTML = '';
+        data.forEach(dr => {
+            container.innerHTML += `
+                <div class="dr-card">
+                    <h3>${dr.name}</h3>
+                    <p>${dr.spec} - ${dr.gov}</p>
+                    <p>الكشف: ${dr.price} جنيه</p>
+                    <button onclick="openModal('${dr.name}')" class="btn-book">احجز الآن</button>
+                </div>
+            `;
+        });
+    }
+
+    function openModal(name) {
+        document.getElementById('selected-dr-text').innerText = name;
+        document.getElementById('booking-modal').style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById('booking-modal').style.display = "none";
+    }
+
+    function saveBooking() {
+        const drName = document.getElementById('selected-dr-text').innerText;
+        const phone = document.getElementById('patient-phone').value;
+        const date = document.getElementById('booking-date').value;
+        const time = document.getElementById('booking-time').value;
+
+        if(phone && date) {
+            const newBooking = {
+                doctor: drName,
+                phone: phone,
+                date: date,
+                time: time,
+                timestamp: new Date().toLocaleString()
+            };
+
+            let allBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
+            allBookings.push(newBooking);
+            localStorage.setItem('myBookings', JSON.stringify(allBookings));
+
+            alert("تم الحجز بنجاح");
+            closeModal();
+            showStoredBookings();
+        } else {
+            alert("يرجى إكمال البيانات");
+        }
+    }
+
+    function showStoredBookings() {
+        const tableBody = document.getElementById('bookings-body');
+        const allBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
+        tableBody.innerHTML = '';
+        allBookings.forEach(item => {
+            tableBody.innerHTML += `
+                <tr>
+                    <td>${item.doctor}</td>
+                    <td>${item.phone}</td>
+                    <td>${item.date}</td>
+                    <td>${item.time}</td>
+                    <td>${item.timestamp}</td>
+                </tr>
+            `;
+        });
+    }
+
+    function filterDoctors() {
+        const gov = document.getElementById('governorate').value;
+        const spec = document.getElementById('specialty').value;
+        const filtered = doctorsData.filter(dr => dr.gov === gov && dr.spec === spec);
+        displayDoctors(filtered);
+    }
+
+    window.onload = function() {
+        displayDoctors(doctorsData);
+        showStoredBookings();
+    };
+</script>
+</body>
+</html>
