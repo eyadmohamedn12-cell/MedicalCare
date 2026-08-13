@@ -171,3 +171,42 @@ body {
         margin: 20% auto;
     }
 }
+
+.evaluation{
+    
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    bottom: 10%;
+    left: 5%;
+    
+
+}
+.evaluation {
+    position: fixed;
+    top: 20px;       
+    left: 20px;  
+    width: 45px;
+    height: 45px;
+    
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.evaluation a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.evaluation img {
+    width: 50px;  
+    height:50x;
+}
+
