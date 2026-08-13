@@ -23,25 +23,34 @@
             <li><a href="#">اسعافات اولية</a></li>
         </ul>
     </nav>
-<div class="cards">
+    <div class="cards">
 
-    <div>
-        <img src="كشف.jpg" alt="">
-        <h3>احجز موعدك</h3>
-        <a href="حجز.html">احجز الآن</a>
-    </div>
-    
-    <div>
-        <img src="مستشفى .png" alt="">
-        <h3>أقرب مستشفى</h3>
-        <a href="https://www.google.com/maps/search/مستشفيات+قريبة+مني/" target="_blank">ابحث عن أقرب مستشفى</a>
+        <div>
+            <img src="كشف.jpg" alt="">
+            <h3>احجز موعدك</h3>
+            <a href="حجز.html">احجز الآن</a>
+        </div>
+        
+        <div>
+            <img src="مستشفى .png" alt="">
+            <h3>أقرب مستشفى</h3>
+            <a href="https://www.google.com/maps/search/مستشفيات+قريبة+مني/" target="_blank">ابحث عن أقرب مستشفى</a>
+        </div>
+
+        <div>
+            <img src="الاسعافات.png" alt="">
+            <h3>الاسعافات الاولية</h3>
+            <a href="الاسعافات.html">عرض التفاصيل</a>
+        </div>
     </div>
 
-    <div>
-        <img src="الاسعافات.png" alt="">
-        <h3>الاسعافات الاولية</h3>
-        <a href="الاسعافات.html">عرض التفاصيل</a>
+    <div class="evaluation">
+        <a href="https://forms.gle/oMbjQLqZHtdp6Bby9" target="_blank" >
+            <img src="rate.png" alt="قيم الموقع" title="قيم الموقع"    style="border: none; max-width: 100%; height: auto;">
+        </a>
     </div>
+
+
     <script>
         //localStorage.clear();
     window.onload = function() {
@@ -58,8 +67,8 @@
         }
     };
     document.getElementById('logout-btn').addEventListener('click', function(event) {
-    event.preventDefault(); 
 
+    event.preventDefault(); 
     
     localStorage.removeItem('userName');
     
