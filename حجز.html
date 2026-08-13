@@ -6,6 +6,7 @@
     <title>نظام حجز المواعيد الطبية</title>
     <style>
         body {
+            
             margin: 0;
             background-color: #f4f7f6;
             color: #333;
@@ -294,13 +295,10 @@
             return;
         }
 
-        const [year, month, day] = date.split('-').map(Number);
-        const [hours, minutes] = time.split(':').map(Number);
-
-        const selectedDateTime = new Date(year, month - 1, day, hours, minutes, 0);
+        const selectedDateTime = new Date(`${date}T${time}:00`);
         const now = new Date();
 
-        if (selectedDateTime.getTime() < now.getTime()) {
+        if (selectedDateTime < now) {
             alert("عذراً، هذا الوقت أو التاريخ قد مضى بالفعل!");
             return;
         }
@@ -332,10 +330,8 @@
         let now = new Date();
 
         let activeAppointments = appointments.filter(function(app) {
-            const [year, month, day] = app.date.split('-').map(Number);
-            const [hours, minutes] = app.time.split(':').map(Number);
-            let bookingDateTime = new Date(year, month - 1, day, hours, minutes, 0);
-            return bookingDateTime.getTime() >= now.getTime();
+            let bookingDateTime = new Date(`${app.date}T${app.time}:00`);
+            return bookingDateTime >= now;
         });
 
         localStorage.setItem('myBookings', JSON.stringify(activeAppointments));
