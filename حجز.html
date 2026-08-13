@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام حجز المواعيد الطبية الكامل</title>
+    <title>نظام حجز المواعيد الطبية</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            
             margin: 0;
             background-color: #f4f7f6;
             color: #333;
@@ -35,15 +35,17 @@
             flex-direction: column;
         }
         label {
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            margin-bottom: 2px;
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 3px;
+            display: block;
         }
         select, input {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 5px;
             outline: none;
+            box-sizing: border-box;
         }
         .search-btn {
             background-color: #3498db;
@@ -83,7 +85,7 @@
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         .modal {
             display: none; 
@@ -95,12 +97,13 @@
         }
         .modal-content {
             background-color: #fff;
-            margin: 10% auto;
+            margin: 8% auto;
             padding: 25px;
             border-radius: 10px;
-            width: 320px;
+            width: 330px;
             text-align: right;
             position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         .close-btn {
             position: absolute;
@@ -119,6 +122,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 1rem;
         }
         .admin-section {
             padding: 30px 5%;
@@ -182,32 +186,42 @@
     <div id="booking-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
-            <h3>تأكيد الحجز</h3>
-            <p id="selected-dr-text" style="font-weight: bold; color: #3498db;"></p>
-            <label>تاريخ الميلاد:</label>
-            <input type="date" id="booking-date" style="width: 100%; margin-bottom: 10px;">
-            <label> الوقت:</label>
-            <select id="booking-time" style="width: 100%; margin-bottom: 10px;">
-                <option value="10:00 صباحاً">10:00 صباحاً</option>
-                <option value="01:00 ظهراً">01:00 ظهراً</option>
-                <option value="06:00 مساءً">06:00 مساءً</option>
-            </select>
-            <label>رقم الهاتف:</label>
-            <input type="tel" id="patient-phone" placeholder="01xxxxxxxxx" style="width: 100%;">
+            <h3 style="margin-top: 0;">تأكيد الحجز</h3>
+            <p id="selected-dr-text" style="font-weight: bold; color: #3498db; margin-bottom: 15px;"></p>
+            
+            <div style="margin-bottom: 12px;">
+                <label>تاريخ الحجز:</label>
+                <input type="date" id="booking-date" style="width: 100%;">
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label>الوقت:</label>
+                <select id="booking-time" style="width: 100%;">
+                    <option value="10:00">10:00 صباحاً</option>
+                    <option value="13:00">01:00 ظهراً</option>
+                    <option value="18:00">06:00 مساءً</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label>رقم الهاتف:</label>
+                <input type="tel" id="patient-phone" placeholder="01xxxxxxxxx" style="width: 100%;">
+            </div>
+
             <button class="save-btn" onclick="saveBooking()">حفظ الحجز</button>
         </div>
     </div>
 
     <div class="admin-section">
-        <h2 style="text-align: center;">سجل الحجوزات المحفوظة</h2>
+        <h2 style="text-align: center;">سجل الحجوزات القادمة</h2>
         <table>
             <thead>
                 <tr>
                     <th>اسم الطبيب</th>
                     <th>رقم الهاتف</th>
-                    <th>تاريخ الميلاد</th>
-                    <th>الوقت (غدا)</th>
-                    <th>وقت التنفيذ</th>
+                    <th>تاريخ الحجز</th>
+                    <th>الوقت</th>
+                    <th>وقت الإدخال</th>
                 </tr>
             </thead>
             <tbody id="bookings-body"></tbody>
@@ -215,7 +229,6 @@
     </div>
 
 <script>
-    
     const doctorsData = [
         { name: "د. أحمد علي", spec: "عظام", price: "300", gov: "القاهرة" },
         { name: "د. منى محمود", spec: "باطنة", price: "200", gov: "القاهرة" },
@@ -243,20 +256,6 @@
         { name: "د. تهاني الجبالي", spec: "نساء وتوليد", price: "300", gov: "أسوان" },
         { name: "د. كمال الشناوي", spec: "باطنة", price: "160", gov: "الغربية" },
         { name: "د. زبيدة ثروت", spec: "جلدية", price: "250", gov: "الغربية" },
-        { name: "د. يحيى الفخراني", spec: "أطفال", price: "200", gov: "المنوفية" },
-        { name: "د. لبلبة", spec: "أسنان", price: "180", gov: "المنوفية" },
-        { name: "د. عزت العلايلي", spec: "عظام", price: "220", gov: "الشرقية" },
-        { name: "د. دلال عبد العزيز", spec: "باطنة", price: "170", gov: "الشرقية" },
-        { name: "د. حسن حسني", spec: "جراحة عامة", price: "400", gov: "البحيرة" },
-        { name: "د. إنعام سالوسة", spec: "أطفال", price: "140", gov: "البحيرة" },
-        { name: "د. فاروق الفيشاوي", spec: "باطنة", price: "190", gov: "كفر الشيخ" },
-        { name: "د. فايزة كمال", spec: "نساء وتوليد", price: "230", gov: "كفر الشيخ" },
-        { name: "د. هشام سليم", spec: "عظام", price: "260", gov: "بورسعيد" },
-        { name: "د. روجينا", spec: "أسنان", price: "210", gov: "بورسعيد" },
-        { name: "د. خالد صالح", spec: "جراحة عامة", price: "450", gov: "السويس" },
-        { name: "د. ميساء مغربي", spec: "جلدية", price: "280", gov: "السويس" },
-        { name: "د. محمد صبحي", spec: "باطنة", price: "200", gov: "الأقصر" },
-        { name: "د. حنان ترك", spec: "أطفال", price: "150", gov: "الأقصر" },
         { name: "د. أشرف عبد الباقي", spec: "عظام", price: "240", gov: "قنا" },
         { name: "د. منى زكي", spec: "نساء وتوليد", price: "350", gov: "قنا" }
     ];
@@ -291,32 +290,54 @@
         const date = document.getElementById('booking-date').value;
         const time = document.getElementById('booking-time').value;
 
-        if(phone && date) {
-            const newBooking = {
-                doctor: drName,
-                phone: phone,
-                date: date,
-                time: time,
-                timestamp: new Date().toLocaleString()
-            };
-
-            let allBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
-            allBookings.push(newBooking);
-            localStorage.setItem('myBookings', JSON.stringify(allBookings));
-
-            alert("تم الحجز بنجاح");
-            closeModal();
-            showStoredBookings();
-        } else {
-            alert("يرجى إكمال البيانات");
+        if (!phone || !date) {
+            alert("يرجى إكمال جميع البيانات المطلوبة!");
+            return;
         }
+
+        const selectedDateTime = new Date(`${date}T${time}:00`);
+        const now = new Date();
+
+        if (selectedDateTime < now) {
+            alert("عذراً، هذا الوقت أو التاريخ قد مضى بالفعل!");
+            return;
+        }
+
+        const newBooking = {
+            doctor: drName,
+            phone: phone,
+            date: date,
+            time: time,
+            timestamp: new Date().toLocaleString('ar-EG')
+        };
+
+        let allBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
+        allBookings.push(newBooking);
+        localStorage.setItem('myBookings', JSON.stringify(allBookings));
+
+        alert("تم الحجز بنجاح!");
+        
+        document.getElementById('patient-phone').value = '';
+        document.getElementById('booking-date').value = '';
+        closeModal();
+        
+        showStoredBookings();
     }
 
     function showStoredBookings() {
         const tableBody = document.getElementById('bookings-body');
-        const allBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
+        let appointments = JSON.parse(localStorage.getItem('myBookings')) || [];
+        let now = new Date();
+
+        let activeAppointments = appointments.filter(function(app) {
+            let bookingDateTime = new Date(`${app.date}T${app.time}:00`);
+            return bookingDateTime >= now;
+        });
+
+        localStorage.setItem('myBookings', JSON.stringify(activeAppointments));
+
         tableBody.innerHTML = '';
-        allBookings.forEach(item => {
+        activeAppointments.forEach(item => {
             tableBody.innerHTML += `
                 <tr>
                     <td>${item.doctor}</td>
@@ -337,6 +358,10 @@
     }
 
     window.onload = function() {
+        const bookingDateInput = document.getElementById('booking-date');
+        const today = new Date().toISOString().split('T')[0];
+        bookingDateInput.min = today;
+
         displayDoctors(doctorsData);
         showStoredBookings();
     };
