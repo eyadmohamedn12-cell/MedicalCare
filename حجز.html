@@ -229,6 +229,7 @@
     </div>
 
 <script>
+    
     const doctorsData = [
         { name: "د. أحمد علي", spec: "عظام", price: "300", gov: "القاهرة" },
         { name: "د. منى محمود", spec: "باطنة", price: "200", gov: "القاهرة" },
@@ -294,7 +295,11 @@
             alert("يرجى إكمال جميع البيانات المطلوبة!");
             return;
         }
-
+        if(phone.lenght!=11){
+            alert("يرجى إدخال رقم هاتف صحيح مكون من 11 رقمًا (مثال: 01xxxxxxxx)")
+            return;
+        }
+        
         const selectedDateTime = new Date(`${date}T${time}:00`);
         const now = new Date();
 
@@ -365,7 +370,7 @@
         displayDoctors(doctorsData);
         showStoredBookings();
     };
-   
+   localStorage.clear()
 </script>
 </body>
 </html>
